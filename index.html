@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>API Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    section { margin-bottom: 2rem; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+    input, textarea, button { display: block; margin: 0.5rem 0; padding: 0.5rem; width: 100%; }
+    button { width: auto; cursor: pointer; }
+    .response { background: #f8f8f8; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; white-space: pre; }
+  </style>
+</head>
+<body>
+  <h1>API Playground</h1>
+
+  <!-- Login Section -->
+  <section>
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div class="response" id="loginResponse"></div>
+  </section>
+
+  <!-- Generate Token Section -->
+  <section>
+    <h2>Generate Token</h2>
+    <button onclick="generateToken()">Generate Token</button>
+    <div class="response" id="generateResponse"></div>
+  </section>
+
+  <!-- Authorize Token Section -->
+  <section>
+    <h2>Authorize Token</h2>
+    <textarea id="customToken" rows="4" placeholder="Paste token here or leave blank to use last generated token"></textarea>
+    <button onclick="authorizeToken()">Authorize Token</button>
+    <div class="response" id="authorizeResponse"></div>
+  </section>
+
+  <script>
+    const API_BASE = "http://localhost:5080/api"; // adjust to your backend
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        document.getElementById("loginResponse").innerText = JSON.stringify(data, null, 2);
+
+        if (res.ok && data.result?.token) {
+          localStorage.setItem("authToken", data.result.token);
+          alert("Login successful. Token saved to localStorage.");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function generateToken() {
+      const token = localStorage.getItem("authToken");
+      if (!token) return alert("Please login first.");
+
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/token/generate`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+          },
+        });
+        const data = await res.json();
+        document.getElementById("generateResponse").innerText = JSON.stringify(data, null, 2);
+
+        if (res.ok && data.result?.token) {
+          document.getElementById("customToken").value = data.result.token;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function authorizeToken() {
+      let token = document.getElementById("customToken").value.trim();
+      if (!token) token = localStorage.getItem("authToken");
+      if (!token) return alert("No token provided.");
+
+      try {
+        const res = await fetch(`${API_BASE}/authorize-token`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "X-API-TOKEN": token
+          },
+          body: JSON.stringify({}),
+        });
+        const data = await res.json();
+        document.getElementById("authorizeResponse").innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
