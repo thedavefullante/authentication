@@ -31,6 +31,14 @@
     <div class="response" id="authorizeResponse"></div>
   </section>
 
+  <!-- Authorize Token Section -->
+  <section>
+    <h2>My Station (Directly Fetch From AFOD API)</h2>
+    <input type="text" name="station_id" id="station_id" placeholder="Enter Station ID"/>
+    <button onclick="showStationDirectAFOD()">View My Station</button>
+    <div class="response" id="myStationResponseDirectAFOD"></div>
+  </section>
+
   <script>
     const API_BASE = "http://localhost:5081"; // adjust to your backend
 
@@ -73,6 +81,22 @@
         });
         const data = await res.json();
         document.getElementById("authorizeResponse").innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function showStationDirectAFOD() {
+      try {
+        const station_id = document.getElementById("station_id").value
+        const res = await fetch(`${API_BASE}/api/v1/station/${station_id}`, {
+          method: "GET",
+          headers: { 
+            "Content-Type": "application/json",
+          }
+        });
+        const data = await res.json();
+        document.getElementById("myStationResponseDirectAFOD").innerText = JSON.stringify(data, null, 2);
       } catch (err) {
         console.error(err);
       }
