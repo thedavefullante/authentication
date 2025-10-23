@@ -93,7 +93,8 @@
           method: "GET",
           headers: { 
             "Content-Type": "application/json",
-          }
+          },
+          credentials: "include"
         });
         const data = await res.json();
         document.getElementById("myStationResponseDirectAFOD").innerText = JSON.stringify(data, null, 2);
