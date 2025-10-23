@@ -33,7 +33,7 @@
 
   <!-- Authorize Token Section -->
   <section>
-    <h2>My Station (Directly Fetch From AFOD API)</h2>
+    <h2>My Station (Direct)</h2>
     <input type="text" name="station_id" id="station_id" placeholder="Enter Station ID"/>
     <button onclick="showStationDirectAFOD()">View My Station</button>
     <div class="response" id="myStationResponseDirectAFOD"></div>
@@ -89,7 +89,7 @@
     async function showStationDirectAFOD() {
       try {
         const station_id = document.getElementById("station_id").value
-        const res = await fetch(`${API_BASE}/api/v1/station/${station_id}`, {
+        const res = await fetch(`${API_BASE}/api/v1/my-station/${station_id}`, {
           method: "GET",
           headers: { 
             "Content-Type": "application/json",
