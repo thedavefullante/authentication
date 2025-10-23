@@ -47,10 +47,10 @@
 
       try {
         const res = await fetch(`${API_BASE}/api/v1/login`, {
-          mode: 'no-cors',
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
+          credentials: "include",
         });
         const data = await res.json();
         document.getElementById("loginResponse").innerText = JSON.stringify(data, null, 2);
